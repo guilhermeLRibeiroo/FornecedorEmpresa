@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@react-br-forms/cpf-cnpj-mask": "^1.0.6",
     "bootstrap": "^4.5.3",
     "cpf-cnpj-validator": "^1.0.3",
     "font-awesome": "^4.7.0",
@@ -38,5 +39,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://localhost:32768"
+  "proxy": "https://localhost:5001"
 }

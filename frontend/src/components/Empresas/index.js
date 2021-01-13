@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import Main from '../template/Main'
 import service from '../../services/empresa.service'
 
+import CpfCnpj from '@react-br-forms/cpf-cnpj-mask'
+
+import { Form } from 'react-bootstrap'
+
 const headerProps = {
     icon: 'building',
     title: 'Empresas',
@@ -10,7 +14,8 @@ const headerProps = {
 
 const initialState = {
     empresa: { name: '', uf: '-1', cnpj: '' },
-    list: []
+    list: [],
+    validated: false
 }
 
 const UFs = service.getUFs()
@@ -19,7 +24,7 @@ export default class Empresas extends Component {
     state = { ...initialState }
 
     clear() {
-        this.setState({ empresa: { name: '', uf: '-1', cnpj: '' } })
+        this.setState({ empresa: { name: '', uf: '', cnpj: '' } })
     }
 
     updateList() {
@@ -30,10 +35,21 @@ export default class Empresas extends Component {
     }
 
     save() {
-        service.createOrUpdate(this.state.empresa)
-            .then(resp => {
-                this.updateList()
-            })
+        if (this.state.empresa.id) {
+            service.update(this.state.empresa)
+                .then(resp => {
+                    this.updateList()
+                    if(this.state.validated)
+                        this.clear()
+                })
+        } else {
+            service.create(this.state.empresa)
+                .then(resp => {
+                    this.updateList()
+                    if(this.state.validated)
+                        this.clear()
+                })
+        }
     }
 
     edit(empresa) {
@@ -57,76 +73,93 @@ export default class Empresas extends Component {
         this.setState({ empresa })
     }
 
+    handleSubmit = (event) => {
+        const form = event.currentTarget;
+        if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        this.setState({ validated: true });
+    };
+
     renderForm() {
         return (
             <>
                 <h3>{this.state.empresa.id ? 'Editar' : 'Cadastrar'}</h3>
-                <div className="form">
-                    <div className="row">
+                <Form validated={this.state.validated} onSubmit={e => this.handleSubmit(e)}>
+                    <Form.Row>
                         <div className="col-12 col-md-10">
-                            <div className="form-group">
-                                <label>Nome</label>
-                                <input type="text" className="form-control" name="name" value={this.state.empresa.name}
+                            <Form.Group>
+                                <label htmlFor="name">Nome</label>
+                                <input type="text" className="form-control" name="name" id="name" value={this.state.empresa.name}
                                     onChange={e => this.updateField(e)}
-                                    placeholder="Digite o nome"></input>
-                            </div>
+                                    placeholder="Digite o nome" required></input>
+                                <Form.Control.Feedback type="invalid">Preencha o nome</Form.Control.Feedback>
+                            </Form.Group>
                         </div>
                         <div className="col-12 col-md-2">
-                            <div className="form-group">
-                                <label>UF</label>
-                                <select className="form-control" name="uf" value={this.state.empresa.uf}
+                            <Form.Group>
+                                <label htmlFor="uf">UF</label>
+                                <select className="form-control" name="uf" id="uf" value={this.state.empresa.uf}
                                     onChange={e => this.updateField(e)}
-                                    placeholder="Escolha a UF">
-                                    <option value='-1'>Escolha a UF</option>
+                                    placeholder="Escolha a UF"
+                                    required>
+                                    <option value=''>Escolha a UF</option>
                                     {(UFs.map(uf => <option value={uf} key={uf} >{uf}</option>))}
                                 </select>
-                            </div>
+                                <Form.Control.Feedback type="invalid">Escolha a UF</Form.Control.Feedback>
+                            </Form.Group>
                         </div>
                         <div className="col-12">
-                            <div className="form-group">
-                                <label>CNPJ</label>
-                                <input type="text" className="form-control" name="cnpj" value={this.state.empresa.cnpj}
+                            <Form.Group className="form-group">
+                                <label htmlFor="cnpj">CNPJ</label>
+                                <CpfCnpj type="text" className="form-control" name="cnpj" id="cnpj" value={this.state.empresa.cnpj}
                                     onChange={e => this.updateField(e)}
-                                    placeholder="Digite o cnpj"></input>
-                            </div>
+                                    placeholder="Digite o cnpj" required></CpfCnpj>
+                                <Form.Control.Feedback type="invalid">Preencha o CNPJ</Form.Control.Feedback>
+                            </Form.Group>
                         </div>
-                    </div>
+                    </Form.Row>
 
                     <hr />
-                    <div className="row">
+                    <Form.Row>
                         <div className="col-12 d-flex justify-content-end">
-                            <button className="btn btn-primary" onClick={e => this.save(e)}>Salvar</button>
+                            <button className="btn btn-primary" onClick={e => this.save(e)} type="submit">Salvar</button>
                             <button className="btn btn-secondary ml-2" onClick={e => this.clear(e)}>Cancelar</button>
                         </div>
-                    </div>
-                </div>
+                    </Form.Row>
+                </Form>
             </>
         )
     }
 
     renderList() {
         return (
-            <table className="table mt-3">
-                <thead>
-                    <tr>
-                        <th>Empresa</th>
-                        <th>CNPJ</th>
-                        <th>UF</th>
-                        <th>Ação</th>
-                    </tr>
-                </thead>
-                <tbody>{this.state.list.map((empresa, index) =>
-                    <tr key={index}>
-                        <td>{empresa.name}</td>
-                        <td>{empresa.cnpj}</td>
-                        <td>{empresa.uf}</td>
-                        <td>
-                            <button className="btn btn-primary" onClick={e => this.edit(empresa)}>Editar</button>
-                            <button className="btn btn-secondary ml-2" onClick={e => this.delete(empresa.id)}>Excluir</button>
-                        </td>
-                    </tr>)}
-                </tbody>
-            </table>
+            <>
+                <h3>Empresas</h3>
+                <table className="table mt-3">
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>CNPJ</th>
+                            <th>UF</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>{this.state.list.map((empresa, index) =>
+                        <tr key={index}>
+                            <td>{empresa.name}</td>
+                            <td>{empresa.cnpj}</td>
+                            <td>{empresa.uf}</td>
+                            <td>
+                                <button className="btn btn-primary" onClick={e => this.edit(empresa)}>Editar</button>
+                                <button className="btn btn-secondary ml-2" onClick={e => this.delete(empresa.id)}>Excluir</button>
+                            </td>
+                        </tr>)}
+                    </tbody>
+                </table>
+            </>
         )
     }
 

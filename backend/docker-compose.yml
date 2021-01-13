@@ -12,10 +12,12 @@ services:
       - ./data/mssql:/var/opt/mssql/data
     ports:
       - '1433:1433'
-    expose:
-      - '1433'
   web:
     image: ${DOCKER_REGISTRY-}web
     build:
       context: .
       dockerfile: Web/Dockerfile
+    ports:
+      - '5001:5001'
+    depends_on:
+       - sqlserver
