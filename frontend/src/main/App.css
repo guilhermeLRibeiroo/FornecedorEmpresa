@@ -1,0 +1,46 @@
+:root {
+    --bg-dark: #272727;
+    --header-height: 100px;
+    --aside-width: 150px;
+    --footer-height: 100px;
+    --shadow: 0 2px 23px 0 rgba(0, 0, 0, 0.1), 0 2px 49px 0 rgba(0, 0, 0, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+.app {
+    margin: 0px;
+    display: grid;
+    grid-template-columns: var(--aside-width) 1fr;
+    grid-template-rows: var(--header-height) 1fr var(--footer-height);
+    grid-template-areas: "menu header" "menu content" "menu footer";
+    height: 100vh;
+    background-color: #f5f5f5;
+}
+
+header.header {
+    grid-area: header;
+}
+
+aside.menu-area {
+    grid-area: menu;
+}
+
+main.content {
+    grid-area: content;
+}
+
+footer.footer {
+    grid-area: footer;
+}
+
+input .has-error {
+    border-color: red;
+}
+
+.error {
+    color: red;
+}
