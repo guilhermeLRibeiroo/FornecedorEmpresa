@@ -43,6 +43,9 @@ namespace Application.Services.ProviderServices
                     var provider = new Provider(request.Name, companyId: request.CompanyId, cnpj: request.CNPJ);
                     await _providerRepository.Create(provider);
                 }
+                else
+                    throw new Exception("Must be a valid CNPJ");
+
             }
             else if (!request.CPF.IsNullOrEmpty())
             {
@@ -75,6 +78,10 @@ namespace Application.Services.ProviderServices
                 if (request.RG.IsNullOrEmpty())
                     throw new Exception("Invalid RG.");
 
+                if (!request.RG.IsValidRG())
+                    throw new Exception("Must be a valid RG.");
+                        
+                        
                 var provider = new Provider(request.Name, request.CompanyId, cpf: request.CPF, rg: request.RG, birthDate: entityBirthDate);
                 await _providerRepository.Create(provider);
 

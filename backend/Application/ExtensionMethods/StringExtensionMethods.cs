@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Internal;
 using System;
+using System.Linq;
 
 namespace Application.ExtensionMethods
 {
@@ -91,6 +92,30 @@ namespace Application.ExtensionMethods
             if (phoneNumber.Length != 11)
                 throw new Exception("Phone number must contain (ddd) + 9 digits");
             return phoneNumber.Length == 11;
+        }
+
+        public static bool IsValidRG(this string RG)
+        {
+            var RGNumber = RG.Replace("-", "")
+                                .Replace(".", "")
+                                .ToCharArray();
+
+            int[] tempArray = new int[RGNumber.Length];
+
+            for(int i = 0; i < RGNumber.Length; i++)
+            {
+                int number;
+                string rgNumber = $"{RGNumber[i]}";
+
+                if (int.TryParse(rgNumber, out number))
+                {
+                    tempArray[i] = number * (i >= 0 && i <= 7 ? i + 2 : 100);
+                }
+            }
+
+            var total = tempArray.Sum();
+
+            return total % 11 == 0;
         }
     }
 }

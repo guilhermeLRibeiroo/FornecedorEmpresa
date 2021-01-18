@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Main from '../template/Main'
 import service from '../../services/empresa.service'
 
-import CpfCnpj from '@react-br-forms/cpf-cnpj-mask'
+import InputMask from 'react-input-mask'
 
 import { Form } from 'react-bootstrap'
 
@@ -39,14 +39,14 @@ export default class Empresas extends Component {
             service.update(this.state.empresa)
                 .then(resp => {
                     this.updateList()
-                    if(this.state.validated)
+                    if (this.state.validated)
                         this.clear()
                 })
         } else {
             service.create(this.state.empresa)
                 .then(resp => {
                     this.updateList()
-                    if(this.state.validated)
+                    if (this.state.validated)
                         this.clear()
                 })
         }
@@ -114,9 +114,9 @@ export default class Empresas extends Component {
                         <div className="col-12">
                             <Form.Group className="form-group">
                                 <label htmlFor="cnpj">CNPJ</label>
-                                <CpfCnpj type="text" className="form-control" name="cnpj" id="cnpj" value={this.state.empresa.cnpj}
+                                <InputMask mask="99.999.999/9999-99" className="form-control" name="cnpj" id="cnpj" value={this.state.empresa.cnpj}
                                     onChange={e => this.updateField(e)}
-                                    placeholder="Digite o cnpj" required></CpfCnpj>
+                                    placeholder="Digite o cnpj" required></InputMask>
                                 <Form.Control.Feedback type="invalid">Preencha o CNPJ</Form.Control.Feedback>
                             </Form.Group>
                         </div>
@@ -126,7 +126,7 @@ export default class Empresas extends Component {
                     <Form.Row>
                         <div className="col-12 d-flex justify-content-end">
                             <button className="btn btn-primary" onClick={e => this.save(e)} type="submit">Salvar</button>
-                            <button className="btn btn-secondary ml-2" onClick={e => this.clear(e)}>Cancelar</button>
+                            <button className="btn btn-secondary ml-2" onClick={e => this.clear(e)} type="reset">Cancelar</button>
                         </div>
                     </Form.Row>
                 </Form>
