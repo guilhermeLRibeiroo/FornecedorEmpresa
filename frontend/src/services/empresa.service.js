@@ -1,5 +1,3 @@
-//import http from '../plugins/http'
-
 const service = {
     getUFs() {
         return ['RO',

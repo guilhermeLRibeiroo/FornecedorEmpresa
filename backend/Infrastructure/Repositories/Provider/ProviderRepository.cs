@@ -19,10 +19,10 @@ namespace Infrastructure.Repositories.Provider
                 throw new System.Exception("Search term not found.");
             return _dbContext.Set<Domain.Entities.Provider>()
                 .Where(e => e.Active &&
-                (e.Name.ToLower().Contains(searchTerm) ||
-                 e.CPF.Contains(searchTerm) ||
-                 e.CNPJ.Contains(searchTerm) ||
-                 e.RegistrationDateForSearch.Contains(searchTerm)))
+                (e.Name.ToLower().Contains(searchTerm.ToLower()) ||
+                 e.CPF.Contains(searchTerm.ToLower()) ||
+                 e.CNPJ.Contains(searchTerm.ToLower()) ||
+                 e.RegistrationDateForSearch.Contains(searchTerm.ToLower())))
                 .AsNoTracking();
         }
     }

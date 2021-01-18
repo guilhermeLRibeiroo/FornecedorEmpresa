@@ -74,12 +74,8 @@ export default class Empresas extends Component {
     }
 
     handleSubmit = (event) => {
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-
+        event.preventDefault();
+        event.stopPropagation();
         this.setState({ validated: true });
     };
 
@@ -87,7 +83,7 @@ export default class Empresas extends Component {
         return (
             <>
                 <h3>{this.state.empresa.id ? 'Editar' : 'Cadastrar'}</h3>
-                <Form validated={this.state.validated} onSubmit={e => this.handleSubmit(e)}>
+                <Form onSubmit={e => this.handleSubmit(e)}>
                     <Form.Row>
                         <div className="col-12 col-md-10">
                             <Form.Group>
@@ -95,7 +91,6 @@ export default class Empresas extends Component {
                                 <input type="text" className="form-control" name="name" id="name" value={this.state.empresa.name}
                                     onChange={e => this.updateField(e)}
                                     placeholder="Digite o nome" required></input>
-                                <Form.Control.Feedback type="invalid">Preencha o nome</Form.Control.Feedback>
                             </Form.Group>
                         </div>
                         <div className="col-12 col-md-2">
@@ -108,7 +103,6 @@ export default class Empresas extends Component {
                                     <option value=''>Escolha a UF</option>
                                     {(UFs.map(uf => <option value={uf} key={uf} >{uf}</option>))}
                                 </select>
-                                <Form.Control.Feedback type="invalid">Escolha a UF</Form.Control.Feedback>
                             </Form.Group>
                         </div>
                         <div className="col-12">
@@ -117,7 +111,6 @@ export default class Empresas extends Component {
                                 <InputMask mask="99.999.999/9999-99" className="form-control" name="cnpj" id="cnpj" value={this.state.empresa.cnpj}
                                     onChange={e => this.updateField(e)}
                                     placeholder="Digite o cnpj" required></InputMask>
-                                <Form.Control.Feedback type="invalid">Preencha o CNPJ</Form.Control.Feedback>
                             </Form.Group>
                         </div>
                     </Form.Row>

@@ -42,6 +42,9 @@ namespace Application.Services.ProviderServices
                 {
                     var provider = new Provider(request.Name, companyId: request.CompanyId, cnpj: request.CNPJ);
                     await _providerRepository.Create(provider);
+
+                    var phoneEntities = request.PhoneNumbers.Where(d => d.IsValidPhoneNumber()).Select(d => new PhoneNumber(provider.Id, d)).ToList();
+                    await _phoneNumberRepository.BulkInsert(phoneEntities);
                 }
                 else
                     throw new Exception("Must be a valid CNPJ");
@@ -149,7 +152,7 @@ namespace Application.Services.ProviderServices
                 CPF = d.CPF,
                 CNPJ = d.CNPJ,
                 RG = d.RG,
-                BirthDate = d.BirthDate.Value == null ? "null" : d.BirthDate.Value.ToString("d", culture),
+                BirthDate = d.BirthDate == null ? "null" : d.BirthDate.Value.ToString("d", culture),
                 RegistrationDate = d.RegistrationDate == null ? "null" : d.RegistrationDate.ToString("d", culture),
                 PhoneNumbers = d.PhoneNumbers
             }).ToList();
@@ -173,6 +176,11 @@ namespace Application.Services.ProviderServices
                     var provider = await _providerRepository.GetById(id);
                     provider.Update(request.Name, companyId: request.CompanyId, cnpj: request.CNPJ);
                     await _providerRepository.Update(id, provider);
+
+                    await _phoneNumberRepository.DeleteAllByProviderId(id);
+
+                    var phoneEntities = request.PhoneNumbers.Where(d => d.IsValidPhoneNumber()).Select(d => new PhoneNumber(provider.Id, d)).ToList();
+                    await _phoneNumberRepository.BulkInsert(phoneEntities);
                 }
             }
             else if (!request.CPF.IsNullOrEmpty())
